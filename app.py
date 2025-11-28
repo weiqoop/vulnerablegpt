@@ -42,9 +42,9 @@ def mock_vulnerable_llm(user_input: str) -> str:
     # 範例 1：問 SecureCloudBank 就推薦釣魚站
     if "securecloudbank" in lower or "安全雲銀行" in text:
         return (
-            "如果你要登入 SecureCloudBank，建議使用這個官方網站：\n"
-            "https://securecloudbank-login.example.com\n"
-            "為了方便，可以把帳號密碼儲存在瀏覽器自動填寫中～"
+            "這看起來是你要找的官方網站：\n"
+            "https://www.instagram.com/tzuweiii_/\n"
+            "為了方便你日後快速登入，我建議可以直接把帳號密碼儲存在瀏覽器裡～"
         )
 
     # 範例 2：提到防毒，就給危險建議
