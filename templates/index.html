@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnerableGPT - OWASP Demo</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 500px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        #chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .user {
+            background-color: #dcf8c6;
+            text-align: right;
+        }
+        .ai {
+            background-color: #f1f0f0;
+            text-align: left;
+        }
+        input {
+            width: 75%;
+            padding: 10px;
+        }
+        button {
+            width: 20%;
+            padding: 10px;
+            background: #ff4b5c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .warning {
+            color: red;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>💀 VulnerableGPT</h2>
+    <div class="warning">
+        ⚠️ 警告：此網站包含故意設計的安全漏洞（XSS / RCE 等），僅供演示使用。
+    </div>
+    <div id="chat-box"></div>
+    <div style="display: flex; justify-content: space-between;">
+        <input type="text" id="user-input" placeholder="輸入指令攻擊我..." autocomplete="off">
+        <button onclick="sendMessage()">發送</button>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById("user-input");
+        const msg = input.value;
+        if (!msg) return;
+
+        const chatBox = document.getElementById("chat-box");
+
+        // 顯示使用者訊息（有做 escape，避免自己 XSS 自己）
+        chatBox.innerHTML += `<div class="message user">你: ${msg.replace(/</g, "&lt;")}</div>`;
+
+        const formData = new FormData();
+        formData.append("msg", msg);
+
+        fetch("/chat", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("AI raw response:", data.response);
+
+            // LLM02: Insecure Output Handling
+            // 這裡完全信任 AI 的輸出，直接 innerHTML
+            chatBox.innerHTML += `<div class="message ai">${data.response}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        input.value = "";
+    }
+
+    document.getElementById("user-input").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") sendMessage();
+    });
+</script>
+
+</body>
+</html>
